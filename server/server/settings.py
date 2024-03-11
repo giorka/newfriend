@@ -1,3 +1,4 @@
+from json import loads
 from os import getenv
 from pathlib import Path
 
@@ -9,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = getenv(key='SECRET_KEY')
 
-DEBUG = {'true': True, 'false': False}.get(getenv(key='DEBUG'))
+DEBUG = loads(getenv(key='DEBUG'))
 
 ALLOWED_HOSTS = []
 
@@ -41,7 +42,7 @@ MIDDLEWARE = (
 
 ROOT_URLCONF = 'server.urls'
 
-TEMPLATES = [
+TEMPLATES = (
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
@@ -55,7 +56,7 @@ TEMPLATES = [
             ],
         },
     },
-]
+)
 
 WSGI_APPLICATION = 'server.wsgi.application'
 
