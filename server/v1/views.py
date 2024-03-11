@@ -1,1 +1,5 @@
-from django.shortcuts import render
+from rest_framework import views
+
+
+class RegisterAPIView(views.APIView):
+    ...
