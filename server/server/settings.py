@@ -24,6 +24,8 @@ DJANGO_APPS = (
 
 INSTALLED_APPS = (
     *DJANGO_APPS,
+    'v1',
+
 )
 
 MIDDLEWARE = (
