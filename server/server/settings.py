@@ -23,6 +23,7 @@ DJANGO_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 )
 
 INSTALLED_APPS = (
@@ -99,3 +100,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MONGO_PORT = getenv(key='MONGO_PORT')
+MONGO_HOST = 'mongodb://localhost:' + str(MONGO_PORT) + '/'
