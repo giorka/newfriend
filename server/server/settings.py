@@ -1,10 +1,15 @@
+from os import getenv
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()  # loads .env
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-_jovspcn_=2m8k8zl+fk9hyvwhpm3xn$1=clk!$okiyo_$rnof'
+SECRET_KEY = getenv(key='SECRET_KEY')
 
-DEBUG = True
+DEBUG = {'true': True, 'false': False}.get(getenv(key='DEBUG'))
 
 ALLOWED_HOSTS = []
 
@@ -54,9 +59,13 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.' + getenv(key='ENGINE'),
+        'NAME': getenv(key='DB_NAME'),
+        'USER': getenv(key='DB_USER'),
+        'PASSWORD': getenv(key='DB_PASSWORD'),
+        'HOST': getenv(key='DB_HOST'),
+        'PORT': getenv(key='DB_PORT'),
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
