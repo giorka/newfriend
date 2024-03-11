@@ -1,2 +1,0 @@
-# newfriend
-Progressive Social Network 🪄
