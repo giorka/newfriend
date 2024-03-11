@@ -12,7 +12,9 @@ SECRET_KEY = getenv(key='SECRET_KEY')
 
 DEBUG = loads(getenv(key='DEBUG'))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = (
+    '127.0.0.1',
+)
 
 DJANGO_APPS = (
     'django.contrib.admin',
