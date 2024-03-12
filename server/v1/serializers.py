@@ -100,16 +100,3 @@ class VerifyUserSerializer(serializers.Serializer):
             email=self._record['email'],
             password=self._record['password'],
         )
-
-    # def create(self, validated_data: dict) -> dict:
-    #     """
-    #     TODO: зарегистрировать пользователя, а в CreateAPIView переопределить метод post для login
-    #     """
-    #
-    #     self.Meta.model.objects.create_user(
-    #         username=self._record['username'],
-    #         email=self._record['email'],
-    #         password=self._record['password'],
-    #     )
-    #
-    #     return validated_data

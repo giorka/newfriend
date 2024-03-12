@@ -12,27 +12,6 @@ class RegisterAPIView(CreateAPIView):
     serializer_class = serializers.RegisterUserSerializer
 
 
-# class VerifyAPIView(CreateAPIView):
-#     serializer_class = serializers.VerifyUserSerializer
-#     model = serializer_class.Meta.model
-#
-#     def post(self, request, *args, **kwargs):
-#         response: Response = super().post(request=request)
-#
-#         email: str = response.data['email']
-#         user: User = self.model.objects.get(email=email)
-#
-#         login(
-#             request=request,
-#             user=user,
-#         )
-#
-#         serializer: serializers.UserSerializer = serializers.UserSerializer(user)
-#
-#         return Response(
-#             data=serializer.data
-#         )
-
 class VerifyAPIView(views.APIView):
     serializer_class = serializers.VerifyUserSerializer
     model = serializer_class.Meta.model
