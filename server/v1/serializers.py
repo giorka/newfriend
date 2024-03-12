@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from typing import NoReturn, Optional
+
 from django.contrib.auth.models import User
 from django.core import validators
 from rest_framework import serializers
@@ -6,35 +9,58 @@ from rest_framework.exceptions import ValidationError
 from . import db
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model: User = User
+        fields: tuple = (
+            'username',
+            # 'date_joined',
+        )
+
+
 class RegisterUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = (
+        model: User = User
+        fields: tuple = (
             'username',
             'email',
             'password',
 
         )
+        expire_time: timedelta = timedelta(seconds=(60 * 2))
 
     def create(self, validated_data: dict) -> dict:
-        db.registration_queue.insert_one(document=validated_data)
+        """
+        TODO: добавлять код в базу данных и рассылать его
+        """
+
+        db.registration_queue.insert_one(
+            document=(
+                    validated_data
+                    | dict(expirationTime=(datetime.utcnow() + self.Meta.expire_time))
+                    | dict(secret='123456')
+            )
+        )
 
         return validated_data
 
-    @staticmethod
-    def credentials_exists(credentials: dict) -> bool:
-        return not not db.registration_queue.find_one(credentials)
+    def credentials_exists(self, credentials: dict) -> bool:
+        return (
+                not not db.registration_queue.find_one(credentials)
+                or self.Meta.model.objects.filter(username=credentials.get('username')).exists()
+                or self.Meta.model.objects.filter(email=credentials.get('email')).exists()
+        )
 
-    def validate(self, data: dict) -> dict:
+    def validate(self, attrs: dict) -> dict:
         if self.credentials_exists(
                 credentials=dict(
-                    username=data.get('username'),
-                    email=data.get('email'),
+                    username=attrs.get('username'),
+                    email=attrs.get('email'),
                 )
         ):
             raise ValidationError('A user with that credentials already exists.')
 
-        return super().validate(data)
+        return super().validate(attrs)
 
 
 class VerifyUserSerializer(serializers.Serializer):
@@ -48,7 +74,42 @@ class VerifyUserSerializer(serializers.Serializer):
     )
 
     class Meta:
-        model = User
+        model: User = User
 
-    def create(self, validated_data: dict) -> dict:
-        ...
+    def __init__(self, *args, **kwargs) -> NoReturn:
+        super().__init__(*args, **kwargs)
+        self._record: Optional[dict] = None
+
+    def validate(self, attrs: dict) -> dict:
+        record = db.registration_queue.find_one_and_delete(
+            dict(
+                email=attrs['email']
+            )
+        )
+
+        if not record or attrs['secret'] != record['secret']:
+            raise ValidationError('Registration time has expired.')
+
+        self._record = record
+
+        return super().validate(attrs=attrs)
+
+    def save(self, **kwargs):
+        return self.Meta.model.objects.create_user(
+            username=self._record['username'],
+            email=self._record['email'],
+            password=self._record['password'],
+        )
+
+    # def create(self, validated_data: dict) -> dict:
+    #     """
+    #     TODO: зарегистрировать пользователя, а в CreateAPIView переопределить метод post для login
+    #     """
+    #
+    #     self.Meta.model.objects.create_user(
+    #         username=self._record['username'],
+    #         email=self._record['email'],
+    #         password=self._record['password'],
+    #     )
+    #
+    #     return validated_data
