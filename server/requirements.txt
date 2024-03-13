@@ -6,3 +6,4 @@ pymongo>=0  # MongoDB
 celery>=0  # celery
 redis>=0  # celery
 flake8>=0  # refactor
+django_imap_backend>=0  # email

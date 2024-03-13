@@ -7,6 +7,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from . import db
+from . import utils
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,11 +35,15 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         TODO: добавлять код в базу данных и рассылать его
         """
 
+        email: utils.Email = utils.Email(email_address=validated_data['email'])
+        code: str = utils.CodeGenerator.generate()
+        email.send_registration_code(code=code)
+
         db.registration_queue.insert_one(
             document=(
                     validated_data
                     | dict(expirationTime=(datetime.utcnow() + self.Meta.expire_time))
-                    | dict(secret='123456')
+                    | dict(secret=code)
             )
         )
 
