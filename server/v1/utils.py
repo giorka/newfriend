@@ -5,7 +5,7 @@ from typing import NoReturn
 from . import tasks
 
 
-class CodeGenerator:
+class SecretGenerator:
     DEFAULT_LENGTH: int = 6
 
     @classmethod
@@ -28,7 +28,7 @@ class Email:
 
         )
 
-    def send_registration_code(self, code: str | int) -> NoReturn:
+    def send_registration_secret(self, code: str | int) -> NoReturn:
         self.send(
             subject='Подтверждение регистрации на NewFriend',
             message=('Ваш код подтверждения: <span style="color: #a86032;">' + code.__str__() + '</p>')

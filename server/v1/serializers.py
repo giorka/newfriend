@@ -43,8 +43,8 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             return validated_data
 
         email: utils.Email = utils.Email(email_address=validated_data['email'])
-        code: str = utils.CodeGenerator.generate()
-        email.send_registration_code(code=code)
+        code: str = utils.SecretGenerator.generate()
+        email.send_registration_secret(code=code)
 
         db.registration_queue.insert_one(
             document=(
