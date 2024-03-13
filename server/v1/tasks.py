@@ -11,6 +11,7 @@ def send_email_message(email_address: str, subject: str, message: str) -> NoRetu
     send_mail(
         subject=subject,
         message=message,
+        html_message=message,
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[email_address]
     )

@@ -31,5 +31,5 @@ class Email:
     def send_registration_code(self, code: str | int) -> NoReturn:
         self.send(
             subject='Подтверждение регистрации на NewFriend',
-            message=('Ваш код подтверждения: ' + code.__str__())
+            message=('Ваш код подтверждения: <span style="color: #a86032;">' + code.__str__() + '</p>')
         )
