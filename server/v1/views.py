@@ -1,5 +1,3 @@
-from typing import NoReturn
-
 from django.contrib.auth import login, logout
 from rest_framework import views
 from rest_framework.generics import CreateAPIView
@@ -16,7 +14,7 @@ class VerifyAPIView(views.APIView):
     serializer_class = serializers.VerifyUserSerializer
     model = serializer_class.Meta.model
 
-    def post(self, request, *args, **kwargs) -> Response:
+    def post(self, request) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -33,7 +31,7 @@ class VerifyAPIView(views.APIView):
 
 class LogoutAPIView(views.APIView):
     @staticmethod
-    def post(request) -> NoReturn:
+    def post(request) -> Response:
         logout(request=request)
 
         return Response(status=200)

@@ -88,7 +88,7 @@ class VerifyUserSerializer(serializers.Serializer):
         )
 
         if not record or attrs['secret'] != record['secret']:
-            raise ValidationError('Registration time has expired.')
+            raise ValidationError('The code is expired.')
 
         self._record = record
 

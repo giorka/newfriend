@@ -3,4 +3,5 @@ djangorestframework>=0  # website
 python-dotenv>=0  # .env
 psycopg2>=0  # SQL
 pymongo>=0  # MongoDB
+celery>=0  # task optimize
 flake8>=0  # refactor

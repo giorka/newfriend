@@ -103,3 +103,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MONGO_PORT = getenv(key='MONGO_PORT')
 MONGO_HOST = 'mongodb://localhost:' + str(MONGO_PORT) + '/'
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
