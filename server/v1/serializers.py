@@ -30,10 +30,17 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         )
         expire_time: timedelta = timedelta(seconds=(60 * 2))
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._credentials: Optional[dict] = None
+
     def create(self, validated_data: dict) -> dict:
         """
         TODO: добавлять код в базу данных и рассылать его
         """
+
+        if not not db.registration_queue.find_one(self._credentials):
+            return validated_data
 
         email: utils.Email = utils.Email(email_address=validated_data['email'])
         code: str = utils.CodeGenerator.generate()
@@ -51,18 +58,17 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     def credentials_exists(self, credentials: dict) -> bool:
         return (
-                not not db.registration_queue.find_one(credentials)
-                or self.Meta.model.objects.filter(username=credentials.get('username')).exists()
+                self.Meta.model.objects.filter(username=credentials.get('username')).exists()
                 or self.Meta.model.objects.filter(email=credentials.get('email')).exists()
         )
 
     def validate(self, attrs: dict) -> dict:
-        if self.credentials_exists(
-                credentials=dict(
-                    username=attrs.get('username'),
-                    email=attrs.get('email'),
-                )
-        ):
+        self._credentials = dict(
+            username=attrs.get('username'),
+            email=attrs.get('email'),
+        )
+
+        if self.credentials_exists(credentials=self._credentials):
             raise ValidationError('A user with that credentials already exists.')
 
         return super().validate(attrs)
